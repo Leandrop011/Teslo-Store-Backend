@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 
-// ! SECTION CONNECTION TO DB AND CREATE A COMPLETE CRUD
+// ! SECTION FILES( MANAGMENT FILES IN THE BACKEND )
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
