@@ -9,8 +9,7 @@ import { ConfigService } from "@nestjs/config";
 import { User } from "../entities/user.entity";
 import { JwtPayloadInterface } from "../interfaces/jwt-payload.interface";
 
-// ! STRATEGY QUE TIENE COMO FUNCION VERIFICAR QUE UN JWT SEA VALIDO
-// ! NO ESTE CADUCADO HAGA MATCH EN EL PAYLOAD Y LA FIRMA, ETC
+// ! STRATEGY PARA EL JWT
 @Injectable()
 export class JwtStrategy extends PassportStrategy( Strategy ){
 

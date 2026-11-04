@@ -6,28 +6,33 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from "bcrypt";
+import { JwtService } from '@nestjs/jwt';
 
 import { User } from './entities/user.entity';
 import { CreateUserDTO, LoginUserDTO } from './dto/index';
+import { JwtPayloadInterface } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
   
-  // * logger
+  // * logger objetc
   private readonly logger: Logger = new Logger('AuthService');
   
   constructor(
+    // ? repo de user
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    // ? service ya creado e importado en el jwtmodule
+    private readonly jwtService: JwtService,
   ) {}
   
   // * METODO QUE CREARA UN NUEVO USER
   async createUser(createUserDto: CreateUserDTO) {
     try {
-      
       // ? desestructuramos el content dto
       const {password, ...userData} = createUserDto;
       
@@ -44,12 +49,15 @@ export class AuthService {
       await this.userRepository.save(user);
       
       // ? retornamos
+      // * cada jwt se relaciona con el payload(email)
+      // * asi que ahi hay relacion con el user y el jwt
       return {
         id: user.id,
         email: user.email,
         fullName: user.fullName,
         isActive: user.isActive,
         roles: user.roles,
+        token: this.getJwToken({email: user.email}) // ? jwt
       };
     } catch (error: any) {
       this.handleDBExceptions(error);
@@ -59,7 +67,6 @@ export class AuthService {
   // * METODO QUE REALIZARA LA VERIFICACION Y EL LOGIN DE UN USER
   async loginUser(loginUserDto: LoginUserDTO) {
     try {
-
       // ? desestructuramos lo que nos da el user
       const {password, email} = loginUserDto;
       
@@ -69,7 +76,7 @@ export class AuthService {
         select: {email: true, password: true}
       });
 
-      // ? si no lo encuentra(malas credenciales)
+      // ? si no lo encuentra(malas credenciales o not founded)
       if (!user) {
         throw '400'
       }
@@ -79,15 +86,26 @@ export class AuthService {
       // ? esto se logra con unas configuraciones ya guardadas en el hash 
       // ? llamada 'salt', se obtiene esta salt y se replica en la password actual
       // ? y si se llega al mismo hash hay match y devuelve true
+      // * seria necesario saber la password correcta para hacer match
       if (!bcrypt.compareSync(password, user.password)) {
         throw '401'
       }
 
       // ? retornamos
-      return user;
+      return {
+        ...user, 
+        token: this.getJwToken({email: user.email})
+      };
     } catch (error) {
       this.handleDBExceptions(error);
     }
+  }
+
+  // * METODO PARA GENERAR UN JWT
+  private getJwToken( payload: JwtPayloadInterface ){
+    // ? generar el jwt en base al paylaod
+    const token = this.jwtService.sign( payload );
+    return token;
   }
 
   // * METODO QUE MANEJARA SEGUN UN CODIGO DE ERROR, EJECUTARA UNA EXCEPTION
