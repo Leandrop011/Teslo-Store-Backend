@@ -57,7 +57,7 @@ export class AuthService {
         fullName: user.fullName,
         isActive: user.isActive,
         roles: user.roles,
-        token: this.getJwToken({email: user.email}) // ? jwt
+        token: this.getJwToken({id: user.id}) // ? jwt
       };
     } catch (error: any) {
       this.handleDBExceptions(error);
@@ -73,7 +73,7 @@ export class AuthService {
       // ? buscamos el user en la db segun el email y solo retornamos email y password 
       const user = await this.userRepository.findOne({
         where: {email}, // ? solo el registro que haga match con este email
-        select: {email: true, password: true}
+        select: {email: true, password: true, id: true}
       });
 
       // ? si no lo encuentra(malas credenciales o not founded)
@@ -94,14 +94,14 @@ export class AuthService {
       // ? retornamos
       return {
         ...user, 
-        token: this.getJwToken({email: user.email})
+        token: this.getJwToken({id: user.id})
       };
     } catch (error) {
       this.handleDBExceptions(error);
     }
   }
 
-  // * METODO PARA GENERAR UN JWT
+  // * METODO PARA GENERAR UN JWT( RECOMENDABLE USAR EL ID, EN LUGAR DEL EMAIL )
   private getJwToken( payload: JwtPayloadInterface ){
     // ? generar el jwt en base al paylaod
     const token = this.jwtService.sign( payload );
