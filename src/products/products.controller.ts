@@ -14,31 +14,36 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PaginationDTO } from '../common/dto/pagination.dto';
+import { Auth } from '../auth/decorators';
+import { ValidRolesEnum } from '../auth/interfaces';
 
 @Controller('products')
+@Auth() // ? es necesario que este autenticado para que use cualquier ruta
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
-  // ! ENDPOINT POST QUE CREA UN NUEVO PRODUCT
+  // ! ENDPOINT POST QUE CREA UN NUEVO PRODUCT (PROTEGIDA)
   @Post()
+  @Auth(ValidRolesEnum.admin)
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
 
-  // ! ENDPOINT GET QUE OBTIENE UNA CANTIDAD DE PRODUCT (PAGINADOS)
+  // ! ENDPOINT GET QUE OBTIENE UNA CANTIDAD DE PRODUCT (PAGINADOS) (REQUIERE AUTHENTICATION)
   @Get()
   findAll(@Query() paginationDTO: PaginationDTO) {
     return this.productsService.findAll(paginationDTO);
   }
 
-  // ! ENDPOINT GET QUE OBTIENE UN PRODUCT POR ID
+  // ! ENDPOINT GET QUE OBTIENE UN PRODUCT POR ID (REQUIERE AUTHENTICATION (JWT))
   @Get(':term')
   findOne(@Param('term') term: string) {
     return this.productsService.findOnePlain(term);
   }
 
-  // ! ENDPOINT PATCH QUE ACTUALIZA UN PRODUCT POR ID
+  // ! ENDPOINT PATCH QUE ACTUALIZA UN PRODUCT POR ID (PROTEGIDA)
   @Patch(':id')
+  @Auth(ValidRolesEnum.admin)
   update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateProductDto: UpdateProductDto,
@@ -46,8 +51,9 @@ export class ProductsController {
     return this.productsService.update(id, updateProductDto);
   }
 
-  // ! ENDPOINT DELETE QUE ELIMINA UN PRODUCT POR ID
+  // ! ENDPOINT DELETE QUE ELIMINA UN PRODUCT POR ID (PROTEGIDA)
   @Delete(':id')
+  @Auth(ValidRolesEnum.admin, ValidRolesEnum.superUser)
   remove(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) {
     return this.productsService.remove(id);
   }

@@ -17,7 +17,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     // ? uso de las envs
     ConfigModule,
 
-    // ? implementar la entidad User en la db
+    // ? implementar la entidad User en la db(aqui se crea la tabla en la db)
     TypeOrmModule.forFeature([User]),
 
     // ! configuracion para usar jwt

@@ -9,6 +9,7 @@ import { RoleProtected } from './role-protected/role-protected.decorator';
 export function Auth(...roles: ValidRolesEnum[]) {
   return applyDecorators(
     RoleProtected(...roles),
+    // * auth guard valida el jwt (authentication y aplica la strategy)
     UseGuards(AuthGuard(), UserRolGuard),
   );
 }

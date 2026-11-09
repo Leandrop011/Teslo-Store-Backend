@@ -15,8 +15,11 @@ import type { Express, Response } from 'express';
 import { FilesService } from './files.service';
 import { fileNamer, fileFilter } from './helpers/index';
 import { ConfigService } from '@nestjs/config';
+import { Auth } from '../auth/decorators';
+import { ValidRolesEnum } from '../auth/interfaces';
 
 @Controller('files')
+@Auth()
 export class FilesController {
   constructor(
     private readonly filesService: FilesService,
@@ -36,8 +39,9 @@ export class FilesController {
     res.sendFile(path);
   }
 
-  // * ENDPOINT QUE CARGA ARCHIVOS
+  // * ENDPOINT QUE CARGA ARCHIVOS(CARGA DE ARCHIVOS SOLO EN EL BACKEND, NO DB)
   @Post('product')
+  @Auth(ValidRolesEnum.admin, ValidRolesEnum.superUser)
   // ? usamos este interceptor para procesar los archivos
   // ? validar, guardar y asignar el nombre con su extension
   @UseInterceptors(

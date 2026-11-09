@@ -1,5 +1,6 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ProductImage } from "./index";
+import { User } from "../../auth/entities/user.entity";
 
 // ! ESTO ES LA REPRESENTACION DE UNA ENTIDAD/TABLA EN LA DB
 // ? (USAMOS LOS DECORADORES DE TYPEORM PARA CREAR COLUMNAS Y DARLSE CONSTRINTS EN LA DB) 
@@ -81,6 +82,14 @@ export class Product {
         { cascade: true, eager: true }
     ) 
     public images?: ProductImage[]
+
+    // ! RELACION USERS MANY TO ONE(AQUI SE CREA LA RELACION A user)
+    @ManyToOne(
+        () => User,
+        ( user ) => user.product,
+        {eager: true} // ? mostrar las relaciones que se tiene
+    )
+    user!: User
 
     // ! -----------------------------
 

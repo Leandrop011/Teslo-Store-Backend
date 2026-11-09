@@ -1,4 +1,5 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Product } from '../../products/entities';
 
 // ! ENTIDAD USERS
 @Entity({ name: 'users' })
@@ -56,5 +57,13 @@ export class User {
   checkFieldsBeforeUpdate(){
     this.checkFieldsBeforeInsert();
   }
+
+  // ! RELACION CON PRODUCTS (PARA SABER QUIEN CREA O EDITA CADA PRODUCT)
+  // ! AQUI NO SE CREA UNA COLUMN PRODUCT(ES LA PADRE)
+  @OneToMany(
+    () => Product,
+    (product) => product.user
+  )
+  public product?: Product;
 
 }
