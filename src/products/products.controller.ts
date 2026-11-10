@@ -14,8 +14,9 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PaginationDTO } from '../common/dto/pagination.dto';
-import { Auth } from '../auth/decorators';
+import { Auth, GetUser } from '../auth/decorators';
 import { ValidRolesEnum } from '../auth/interfaces';
+import { User } from '../auth/entities/user.entity';
 
 @Controller('products')
 @Auth() // ? es necesario que este autenticado para que use cualquier ruta
@@ -25,8 +26,11 @@ export class ProductsController {
   // ! ENDPOINT POST QUE CREA UN NUEVO PRODUCT (PROTEGIDA)
   @Post()
   @Auth(ValidRolesEnum.admin)
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+  create(
+    @Body() createProductDto: CreateProductDto,
+    @GetUser() user: User
+  ) {
+    return this.productsService.create(createProductDto, user);
   }
 
   // ! ENDPOINT GET QUE OBTIENE UNA CANTIDAD DE PRODUCT (PAGINADOS) (REQUIERE AUTHENTICATION)
@@ -47,8 +51,9 @@ export class ProductsController {
   update(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
     @Body() updateProductDto: UpdateProductDto,
+    @GetUser() user: User // ? decorador qu eobtiene el user que esta realizando esa accion
   ) {
-    return this.productsService.update(id, updateProductDto);
+    return this.productsService.update(id, updateProductDto, user);
   }
 
   // ! ENDPOINT DELETE QUE ELIMINA UN PRODUCT POR ID (PROTEGIDA)

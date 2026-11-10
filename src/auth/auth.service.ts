@@ -75,7 +75,7 @@ export class AuthService {
         where: {email}, // ? solo el registro que haga match con este email
         select: {email: true, password: true, id: true}
       });
-
+      
       // ? si no lo encuentra(malas credenciales o not founded)
       if (!user) {
         throw '400'
@@ -90,14 +90,32 @@ export class AuthService {
       if (!bcrypt.compareSync(password, user.password)) {
         throw '401'
       }
-
+      
       // ? retornamos
       return {
-        ...user, 
+        id: user.id,
+        email: user.email, 
         token: this.getJwToken({id: user.id})
       };
     } catch (error) {
       this.handleDBExceptions(error);
+    }
+  }
+
+  // * METODO QUE VUELVE A GENERAR/REVALIDAR UN JWT HACIA UN USER
+  public async checkAuthStatus(id: string) {
+    // ? user by id
+    const user = await this.userRepository.findOneBy({id: id});
+
+    if (!user) {
+      return '401'
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      fullName: user.fullName,
+      token: this.getJwToken({id: id}) // ? generar nuevo jwt
     }
   }
 

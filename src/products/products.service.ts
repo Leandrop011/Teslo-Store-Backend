@@ -14,6 +14,7 @@ import { PaginationDTO } from '../common/dto/pagination.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { DataSource } from 'typeorm';
+import { User } from '../auth/entities/user.entity';
 
 
 @Injectable()
@@ -101,8 +102,8 @@ export class ProductsService {
     }
   }
 
-  // * SERVICIO QUE INSERTA UN REGISTRO EN LA ENTIDAD PRODUCT DE NUESTRA DB
-  async create(createProductDto: CreateProductDto) {
+  // * SERVICIO QUE INSERTA UN REGISTRO EN LA ENTIDAD PRODUCT DE NUESTRA DB (CON REFERENCIA A UN USER)
+  async create(createProductDto: CreateProductDto, user: User) {
 
     const {images = [], ...productDetails} = createProductDto;
 
@@ -116,7 +117,8 @@ export class ProductsService {
           // * para la creacion solo se necesita la url, no el product (id) porque typeorm
           // * infiere en este momento de creacion esta dentro del product, entonces lo asigna a esa image ese id
           images: images.map( (image) => this.productImageRepository.create( { url: image } ) ),
-        } 
+          user: user
+        }
       );
       
       // ? insercion en la base de datos
@@ -125,14 +127,15 @@ export class ProductsService {
       // ? retorno del productgo insertado (retornabos en las images solo el listado de images, no con el id)
       return {...product, images};
     } catch (error: any) {
+      console.log(error)
       this.handleDBExeptions(error);
     }
     
   }
   
   
-  // * SERVICIO QUE ACTUALIZA UN PRODUCT SEGUN EL ID Y LO QUE TENGA EN EL DTO
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  // * SERVICIO QUE ACTUALIZA UN PRODUCT SEGUN EL ID Y LO QUE TENGA EN EL DTO (CON REFERENCIA A UN USER)
+  async update(id: string, updateProductDto: UpdateProductDto, user: User) {
 
     const {images, ...toUpdate} = updateProductDto
     
@@ -141,6 +144,7 @@ export class ProductsService {
     const product = await this.productRepository.preload({
       id: id, // * busqueda
       ...toUpdate, // * carga
+      user: user // * usuario que realizo la accion
     });
 
     // ? si no lo encuentra, mandamos una exception
@@ -228,10 +232,10 @@ export class ProductsService {
 
   // * METODO QUE MANEJARA LOS DISTINTOS ERRORES Y SI NO ENCUENTRA UNO, REGRESA UNO GENERICO(INTERNAL ERROR)
   private handleDBExeptions(error: any){
-    if (error ==='23505') {
+    if (error.code ==='23505') {
       throw new BadRequestException(`Error: ${error.detail}`)
     }
-    if (error === '404') {
+    if (error.code === '404') {
       throw new NotFoundException('Error, no se encontro ese product');
     }
     this.logger.error(error);

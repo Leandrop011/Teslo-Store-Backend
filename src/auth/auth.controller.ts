@@ -32,6 +32,18 @@ export class AuthController {
     return this.authService.loginUser(loginUserDto);
   }
 
+  // * ENDPOINT DE REVALIDACION DE JWT
+  @Get('check-auth-status')
+  @UseGuards(AuthGuard())
+  checkAuthStatus(
+    @GetUser() user: User,
+  ){
+    const id = user.id;
+    return this.authService.checkAuthStatus(id);
+  }
+
+  // ! -------------- TEST RUTAS ------------ 
+
   // * ENDPOINT DE PRUEBA, PRIVATE ROUTE( mas que todo es para authentication esto)
   // ? USAMOS UN GUARD PARA RECIVIR LA SOLICITUD DE ACCESO AL ENDPOINT
   // ? Y USAMOS UN DECORADOR AuthGuard, ESTO YA TRAE CARGADO LA STRATEGY QUE SE REALIZO
