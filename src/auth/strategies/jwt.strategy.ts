@@ -9,7 +9,8 @@ import { ConfigService } from "@nestjs/config";
 import { User } from "../entities/user.entity";
 import { JwtPayloadInterface } from "../interfaces/jwt-payload.interface";
 
-// ! STRATEGY PARA EL JWT, EN ESTE PUNTO YA SABEMOS SI EL JWT ES VERIDICO O NO CON EL PAYLOAD
+// ! STRATEGY PARA EL JWT PARA VOLVER UN USER CON JWT VALIDO, 
+// ! EN ESTE PUNTO YA SABEMOS SI EL JWT ES VERIDICO O NO CON EL PAYLOAD
 @Injectable()
 export class JwtStrategy extends PassportStrategy( Strategy ){
 

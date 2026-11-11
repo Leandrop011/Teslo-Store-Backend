@@ -103,19 +103,14 @@ export class AuthService {
   }
 
   // * METODO QUE VUELVE A GENERAR/REVALIDAR UN JWT HACIA UN USER
-  public async checkAuthStatus(id: string) {
-    // ? user by id
-    const user = await this.userRepository.findOneBy({id: id});
-
-    if (!user) {
-      return '401'
-    }
-
+  public async checkAuthStatus(user: User) {
+    
+    // ? user 
     return {
       id: user.id,
       email: user.email,
       fullName: user.fullName,
-      token: this.getJwToken({id: id}) // ? generar nuevo jwt
+      token: this.getJwToken({id: user.id}) // ? generar nuevo jwt
     }
   }
 

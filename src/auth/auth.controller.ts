@@ -38,8 +38,7 @@ export class AuthController {
   checkAuthStatus(
     @GetUser() user: User,
   ){
-    const id = user.id;
-    return this.authService.checkAuthStatus(id);
+    return this.authService.checkAuthStatus(user);
   }
 
   // ! -------------- TEST RUTAS (BORRAR EN AMBIENTE DE PRODUCCION)------------ 
