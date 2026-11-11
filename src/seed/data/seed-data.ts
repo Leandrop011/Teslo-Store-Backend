@@ -1,7 +1,4 @@
 // ! DATA QUE SE INSERTARA PARA LA SEED
-
-import { emit } from "process";
-
 interface SeedProduct {
     description: string;
     images: string[];

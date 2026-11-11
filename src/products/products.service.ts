@@ -127,7 +127,6 @@ export class ProductsService {
       // ? retorno del productgo insertado (retornabos en las images solo el listado de images, no con el id)
       return {...product, images};
     } catch (error: any) {
-      console.log(error)
       this.handleDBExeptions(error);
     }
     

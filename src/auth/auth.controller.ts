@@ -42,7 +42,7 @@ export class AuthController {
     return this.authService.checkAuthStatus(id);
   }
 
-  // ! -------------- TEST RUTAS ------------ 
+  // ! -------------- TEST RUTAS (BORRAR EN AMBIENTE DE PRODUCCION)------------ 
 
   // * ENDPOINT DE PRUEBA, PRIVATE ROUTE( mas que todo es para authentication esto)
   // ? USAMOS UN GUARD PARA RECIVIR LA SOLICITUD DE ACCESO AL ENDPOINT

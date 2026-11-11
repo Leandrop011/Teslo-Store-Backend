@@ -7,7 +7,7 @@ export class SeedController {
   constructor(private readonly seedService: SeedService) {}
 
   @Get()
-  // @Auth(ValidRolesEnum.admin)
+  // @Auth(ValidRolesEnum.admin) // ! solo para desarrollo (no en ambiente de produccion)
   executeSeed() {
     return this.seedService.runSeed();
   }
